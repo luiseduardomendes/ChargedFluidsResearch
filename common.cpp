@@ -8,13 +8,17 @@ void read_csv(string file_name, vector<Particle *> &particles){
     string temp;
 
     input >> file_size;
-    input >> temp;
+    getline(input, temp);
 
     for (int i = 0; i < file_size; i ++){
-        vector<float> v;
+        float v[3];
         string part_type;
-        input >> temp;
-        split(temp, v, part_type, ' ');
+        
+        input >> part_type;
+        input >> v[0];
+        input >> v[1];
+        input >> v[2];
+        
         particles.push_back(new Particle(v[0], v[1], v[2], part_type));
     }
     

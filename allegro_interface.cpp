@@ -1,12 +1,10 @@
 #include "allegro_interface.hpp"
 
-Allegro_interface::Allegro_interface(int disp_w, int disp_h, int fps, double init_z, double range_z, string file_name){
-    
-    read_csv(file_name, this->particles);
-    
+Allegro_interface::Allegro_interface(int disp_w, int disp_h, int fps, double init_z, string file_name){
     if (!al_init())
         return;
-    this->display = new Display(disp_w, disp_h, fps, init_z, range_z, this->particles);
+    read_csv(file_name, this->particles);
+    this->display = new Display(disp_w, disp_h, fps, init_z, this->particles);
     if (!display->is_on())
         return;
     
@@ -15,6 +13,7 @@ Allegro_interface::Allegro_interface(int disp_w, int disp_h, int fps, double ini
     al_init_primitives_addon();
     al_init_font_addon();
     al_init_ttf_addon();
+    
 }
 
 void Allegro_interface::run_app(){
@@ -38,7 +37,7 @@ void Allegro_interface::verify_event(ALLEGRO_EVENT event){
         case (ALLEGRO_EVENT_DISPLAY_CLOSE):
             this->app_controller.end_app();
             break;  
-        case (ALLEGRO_KEY_DOWN):
+        case (ALLEGRO_EVENT_KEY_DOWN):
             this->keyboard_event(event);
             break;
         case (ALLEGRO_EVENT_TIMER):
@@ -52,15 +51,27 @@ void Allegro_interface::keyboard_event(ALLEGRO_EVENT event){
     case ALLEGRO_KEY_ESCAPE:
         this->app_controller.end_app();
         break;
+    case ALLEGRO_KEY_P:
+        this->display->pause_play();
+        break;
+    case ALLEGRO_KEY_Z:
+        this->display->inc_z(-0.5);
+        break;
+    case ALLEGRO_KEY_X:
+        this->display->inc_z(0.5);
+        break;
     }
+
 }
 
 void Allegro_interface::timer_event(ALLEGRO_EVENT event){
     ALLEGRO_TIMER* source = event.timer.source;
-    if (source == this->display->timer){
+    if (source == this->display->timer and !this->display->is_paused()){
         for (auto i : this->particles){
-            i->pos.x += 1;
+            i->pos.x += ((rand()%3) - 1)/5.0;
+            i->pos.y += ((rand()%3) - 1)/5.0;
+            i->pos.z += ((rand()%3) - 1)/5.0;
         }
-        this->display->draw_particles();
     }
+    this->display->draw_particles();
 }

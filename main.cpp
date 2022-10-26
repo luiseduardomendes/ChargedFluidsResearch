@@ -3,7 +3,7 @@
 using namespace::std;
 
 int main(){
-    Allegro_interface app(640, 480, 60, 0, 10, "saida.txt");
+    Allegro_interface app(1024, 640, 24, 0, "saida.txt");
     app.run_app();
     return 0;
 }

@@ -1,8 +1,11 @@
+#pragma once
+
 #include "allegro.hpp"
 #include "common.hpp"
 #include <vector>
 #include <map>
 #include <string>
+#include <iostream>
 #include "display.hpp"
 #include "app_controller.hpp"
 
@@ -20,7 +23,7 @@ class Allegro_interface{
         void verify_event(ALLEGRO_EVENT event);
     public:
         
-        Allegro_interface(int disp_w, int disp_h, int fps, double init_z, double range_z, string file_name);
+        Allegro_interface(int disp_w, int disp_h, int fps, double init_z, string file_name);
         void end_app();
         void run_app();
 };
