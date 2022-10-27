@@ -60,6 +60,12 @@ void Allegro_interface::keyboard_event(ALLEGRO_EVENT event){
     case ALLEGRO_KEY_X:
         this->display->inc_z(0.5);
         break;
+    case ALLEGRO_KEY_EQUALS:
+        this->display->zoom_in();
+        break;
+    case ALLEGRO_KEY_MINUS:
+        this->display->zoom_out();
+        break;
     }
 
 }
@@ -67,11 +73,15 @@ void Allegro_interface::keyboard_event(ALLEGRO_EVENT event){
 void Allegro_interface::timer_event(ALLEGRO_EVENT event){
     ALLEGRO_TIMER* source = event.timer.source;
     if (source == this->display->timer and !this->display->is_paused()){
-        for (auto i : this->particles){
-            i->pos.x += ((rand()%3) - 1)/5.0;
-            i->pos.y += ((rand()%3) - 1)/5.0;
-            i->pos.z += ((rand()%3) - 1)/5.0;
-        }
+        this->update_particle_position();
     }
-    this->display->draw_particles();
+    this->display->show();
+}
+
+void Allegro_interface::update_particle_position(){
+    for (auto i : this->particles){
+        i->pos.x += ((rand()%3) - 1)/5.0;
+        i->pos.y += ((rand()%3) - 1)/5.0;
+        i->pos.z += ((rand()%3) - 1)/5.0;
+    }
 }
