@@ -1,10 +1,12 @@
 #include "allegro_interface.hpp"
 #include <cmath>
+
 Allegro_interface::Allegro_interface(int disp_w, int disp_h, int fps, double init_z, string file_name){
+    initialize_box({-20,20}, {-20,20}, {-20,20});
     if (!al_init())
         return;
     read_csv(file_name, this->particles);
-    this->display = new Display(disp_w, disp_h, fps, init_z, this->particles);
+    this->display = new Display(disp_w, disp_h, fps, init_z, this->particles, box);
     if (!display->is_on())
         return;
     
@@ -15,6 +17,7 @@ Allegro_interface::Allegro_interface(int disp_w, int disp_h, int fps, double ini
     
     
     this->fps = fps;
+    this->exec_spd = 5;
 }
 
 void Allegro_interface::run_app(){
@@ -82,6 +85,17 @@ void Allegro_interface::timer_event(ALLEGRO_EVENT event){
     this->display->show();
 }
 
+void Allegro_interface::initialize_box(pdd x, pdd y, pdd z){
+    this->box.p[0][0][0] = Vector(x.inf,y.inf,z.inf);
+    this->box.p[0][0][1] = Vector(x.inf,y.inf,z.sup);
+    this->box.p[0][1][0] = Vector(x.inf,y.sup,z.inf);
+    this->box.p[0][1][1] = Vector(x.inf,y.sup,z.sup);
+    this->box.p[1][0][0] = Vector(x.sup,y.inf,z.inf);
+    this->box.p[1][0][1] = Vector(x.sup,y.inf,z.sup);
+    this->box.p[1][1][0] = Vector(x.sup,y.sup,z.inf);
+    this->box.p[1][1][1] = Vector(x.sup,y.sup,z.sup);
+}
+
 void Allegro_interface::update_particle_position(){
     double t = app_controller.get_timer();
     for (auto i : this->particles){
@@ -108,10 +122,10 @@ void Allegro_interface::update_particle_position(){
         i->pos.y += (sin(10*t) * (1.0/fps));*/
 
         /* MOVIMENTO ALEATORIO*/
-        i->acc = Vector((rand()%11 - 5), (rand()%11 - 5), 0);
-        
+        i->acc = (Vector((rand()%11 - 5), (rand()%11 - 5), 0));
         
     }
+
 
 
 }

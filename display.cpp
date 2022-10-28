@@ -4,7 +4,7 @@
 
 #define CTE_CONV 5
 
-Display::Display(int w, int h, double fps, double init_z, vector<Particle*> part){
+Display::Display(int w, int h, double fps, double init_z, vector<Particle*> part, Box box){
     this->on = true;
 
     if (!(this->display = al_create_display(w, h)))
@@ -17,14 +17,15 @@ Display::Display(int w, int h, double fps, double init_z, vector<Particle*> part
     
     this->particles = part;
 
-    al_init_ttf_addon();
-    this->font = al_load_ttf_font("fonte.ttf", 36, 0);
+    //al_init_ttf_addon();
+    //this->font = al_load_ttf_font("fonte.ttf", 36, 0);
     
     this->timer = al_create_timer(1.0/fps);
     al_start_timer(this->timer);
     this->paused = false;
 
     this->zoom = 1;
+    this->box = box;
 
 }
 
@@ -36,12 +37,25 @@ void Display::show(){
     al_clear_to_color(al_map_rgb(0x00, 0x11, 0x20));
     this->draw_grid();
     this->draw_particles();
+    this->draw_box();
     this->draw_HUD();
+
     al_flip_display();
 }
 
 void Display::draw_HUD(){
-    al_draw_textf(this->font, al_map_rgb(0xff,0xff,0xff), 2*w/3, h - 48, 0, "grid line dimension = %dÅ ", 10);
+    // al_draw_textf(this->font, al_map_rgb(0xff,0xff,0xff), 2*w/3, h - 48, 0, "grid line dimension = %dÅ ", 10);
+}
+
+void Display::draw_box(){
+    al_draw_rectangle(
+        box.p[0][0][0].x * zoom*CTE_CONV + w/2, 
+        box.p[0][0][0].y * zoom*CTE_CONV + h/2, 
+        box.p[1][1][0].x * zoom*CTE_CONV + w/2, 
+        box.p[1][1][0].y * zoom*CTE_CONV + h/2, 
+        al_map_rgb(0xc0,0xc0,0xc0),
+        2
+    );
 }
 
 void Display::draw_grid(){
@@ -68,9 +82,30 @@ void Display::draw_grid(){
         i -= zoom*CTE_CONV*10;
     }
     i = this->w / 2.0;
-    al_draw_line(i, 0, i, this->h, al_map_rgb(0xcf,0xcf,0xcf),3);
+    while (i < this->w){
+        al_draw_line(i, 0, i, this->h, al_map_rgb(0x2f,0x2f,0x2f),1);
+        i += zoom*CTE_CONV*2.5;
+    }
+    i = this->w / 2.0;
+    while (i > 0){
+        al_draw_line(i, 0, i, this->h, al_map_rgb(0x2f,0x2f,0x2f),1);
+        i -= zoom*CTE_CONV*2.5;
+    }
+
     i = this->h / 2;
-    al_draw_line(0, i, this->w, i, al_map_rgb(0xcf,0xcf,0xcf),3);
+    while (i < this->h){
+        al_draw_line(0, i, this->w, i, al_map_rgb(0x2f,0x2f,0x2f),1);
+        i += zoom*CTE_CONV*2.5;
+    }
+    i = this->h / 2;
+    while (i > 0){
+        al_draw_line(0, i, this->w, i, al_map_rgb(0x2f,0x2f,0x2f),1);
+        i -= zoom*CTE_CONV*2.5;
+    }
+    i = this->w / 2.0;
+    al_draw_line(i, 0, i, this->h, al_map_rgb(0xcf,0xcf,0xcf),2);
+    i = this->h / 2;
+    al_draw_line(0, i, this->w, i, al_map_rgb(0xcf,0xcf,0xcf),2);
 }
 
 void Display::draw_particles(){

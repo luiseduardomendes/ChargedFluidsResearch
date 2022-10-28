@@ -2,6 +2,7 @@
 
 #include "allegro.hpp"
 #include "particles.hpp"
+#include "box.hpp"
 #include <vector>
 
 using namespace std;
@@ -12,6 +13,7 @@ private:
     double zoom;
     double current_z;
     int h, w;
+    Box box;
     vector<Particle*> particles;
     bool paused;
 
@@ -20,11 +22,12 @@ public:
     ALLEGRO_DISPLAY* display;
     ALLEGRO_TIMER* timer;
 
-    Display(int, int, double, double, vector<Particle*>);
+    Display(int, int, double, double, vector<Particle*>, Box);
 
     void show();
     void draw_particles();
     void draw_HUD();
+    void draw_box();
     void draw_grid();
 
     bool is_on();

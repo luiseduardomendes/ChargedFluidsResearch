@@ -1,4 +1,4 @@
-#include "Vector.hpp"
+#include "vector.hpp"
 
 Vector::Vector(){
     x = 0;
