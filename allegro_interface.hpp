@@ -18,6 +18,8 @@ class Allegro_interface{
 
         vector<Particle*> particles;
 
+        double fps;
+
         void timer_event(ALLEGRO_EVENT event);
         void keyboard_event(ALLEGRO_EVENT event);
         void verify_event(ALLEGRO_EVENT event);

@@ -3,18 +3,19 @@
 #include <vector>
 #include <string>
 #include "allegro.hpp"
+#include "vector.hpp"
+
 using namespace std;
 
-struct Pos{
-    double x, y, z;
-};
 
 class Particle{
 public:
     string type;
     double radius;
     ALLEGRO_COLOR color;
-    Pos pos;
+    Vector pos;
+    Vector spd;
+    Vector acc;
     Particle();
     Particle(double x, double y, double z, string type);
 };

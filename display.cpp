@@ -17,6 +17,7 @@ Display::Display(int w, int h, double fps, double init_z, vector<Particle*> part
     
     this->particles = part;
 
+    al_init_ttf_addon();
     this->font = al_load_ttf_font("fonte.ttf", 36, 0);
     
     this->timer = al_create_timer(1.0/fps);
@@ -40,7 +41,7 @@ void Display::show(){
 }
 
 void Display::draw_HUD(){
-    // al_draw_textf(this->font, al_map_rgb(0xff,0xff,0xff), 2*w/3, h - 48, 0, "grid_lines = %.2lf", zoom*CTE_CONV*10);
+    al_draw_textf(this->font, al_map_rgb(0xff,0xff,0xff), 2*w/3, h - 48, 0, "grid line dimension = %dÅ ", 10);
 }
 
 void Display::draw_grid(){
@@ -66,6 +67,10 @@ void Display::draw_grid(){
         al_draw_line(0, i, this->w, i, al_map_rgb(0x8f,0x8f,0x8f),2);
         i -= zoom*CTE_CONV*10;
     }
+    i = this->w / 2.0;
+    al_draw_line(i, 0, i, this->h, al_map_rgb(0xcf,0xcf,0xcf),3);
+    i = this->h / 2;
+    al_draw_line(0, i, this->w, i, al_map_rgb(0xcf,0xcf,0xcf),3);
 }
 
 void Display::draw_particles(){
@@ -81,7 +86,7 @@ void Display::draw_particles(){
                 p->pos.x*zoom*CTE_CONV + w/2, 
                 p->pos.y*zoom*CTE_CONV + h/2,
                 sqrt(abs(pow(p->radius, 2) - pow((p->pos.z-current_z), 2)))*zoom*CTE_CONV, 
-                al_map_rgb(0,0,0), 0.2*zoom*CTE_CONV
+                al_map_rgb(0,0,0), 0.2*p->radius*zoom*CTE_CONV
             );
         }
     }
@@ -118,4 +123,8 @@ void Display::zoom_out(){
 
 void Display::zoom_in(){
     this->zoom *= 1.1;
+}
+
+void Display::zoom_rst(){
+    this->zoom = 1;
 }

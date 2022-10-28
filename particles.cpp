@@ -2,18 +2,16 @@
 #include <iostream>
 
 Particle::Particle(){
-    this->pos.x = 0;
-    this->pos.y = 0;
-    this->pos.z = 0;
+    this->pos = Vector();
     this->type = "None";
 }
 
 Particle::Particle(double x, double y, double z, string type){
-    this->pos.x = x;
-    this->pos.y = y;
-    this->pos.z = z;
+    this->pos = Vector(x, y, z);
+    this->spd = Vector((rand()%3 - 1), (rand()%3 - 1), (rand()%3 - 1));
+    this->spd = Vector();
+    this->acc = Vector();
     this->type = type;
-
 
     if (type == "Na"){
         this->radius = 2.27;

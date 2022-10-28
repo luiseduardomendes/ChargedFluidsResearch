@@ -1,5 +1,5 @@
 #include "allegro_interface.hpp"
-
+#include <cmath>
 Allegro_interface::Allegro_interface(int disp_w, int disp_h, int fps, double init_z, string file_name){
     if (!al_init())
         return;
@@ -12,8 +12,9 @@ Allegro_interface::Allegro_interface(int disp_w, int disp_h, int fps, double ini
     al_init_image_addon();
     al_init_primitives_addon();
     al_init_font_addon();
-    al_init_ttf_addon();
     
+    
+    this->fps = fps;
 }
 
 void Allegro_interface::run_app(){
@@ -55,16 +56,19 @@ void Allegro_interface::keyboard_event(ALLEGRO_EVENT event){
         this->display->pause_play();
         break;
     case ALLEGRO_KEY_Z:
-        this->display->inc_z(-0.5);
+        this->display->inc_z(-0.25);
         break;
     case ALLEGRO_KEY_X:
-        this->display->inc_z(0.5);
+        this->display->inc_z(0.25);
         break;
     case ALLEGRO_KEY_EQUALS:
         this->display->zoom_in();
         break;
     case ALLEGRO_KEY_MINUS:
         this->display->zoom_out();
+        break;
+    case ALLEGRO_KEY_0:
+        this->display->zoom_rst();
         break;
     }
 
@@ -79,9 +83,35 @@ void Allegro_interface::timer_event(ALLEGRO_EVENT event){
 }
 
 void Allegro_interface::update_particle_position(){
+    double t = app_controller.get_timer();
     for (auto i : this->particles){
-        i->pos.x += ((rand()%3) - 1)/5.0;
-        i->pos.y += ((rand()%3) - 1)/5.0;
-        i->pos.z += ((rand()%3) - 1)/5.0;
+        i->spd = i->spd + (i->acc * (1.0/fps));
+
+        i->pos = i->pos + (i->spd * (1.0/fps));
+        if (i->pos.x > 20)
+            i->pos.x -= 40;
+        if (i->pos.x < -20)
+            i->pos.x += 40;
+        if (i->pos.y > 20)
+            i->pos.y -= 40;
+        if (i->pos.y < -20)
+            i->pos.y += 40;
+        if (i->pos.z > 20)
+            i->pos.z -= 40;
+        if (i->pos.z < -20)
+            i->pos.z += 40;
+
+        /*i->pos.x = i->pos.x + (10*sin(50*t) * (1.0/fps));*/
+        
+        /* MOVIMENTO CIRCULAR
+        i->pos.x += (-cos(10*t) * (1.0/fps));
+        i->pos.y += (sin(10*t) * (1.0/fps));*/
+
+        /* MOVIMENTO ALEATORIO*/
+        i->acc = Vector((rand()%11 - 5), (rand()%11 - 5), 0);
+        
+        
     }
+
+
 }

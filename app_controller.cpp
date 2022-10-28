@@ -6,6 +6,7 @@ App_controller::App_controller(){
 
 void App_controller::init_app(){
     this->close_app = false;
+    this->start_timer = clock();
 }
 
 void App_controller::end_app(){
@@ -18,4 +19,8 @@ bool App_controller::is_ended(){
 
 bool App_controller::is_running(){
     return not this->close_app;
+}
+
+double App_controller::get_timer(){
+    return double(clock() - start_timer) / CLOCKS_PER_SEC;
 }

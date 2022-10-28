@@ -38,4 +38,5 @@ public:
 
     void zoom_out();
     void zoom_in();
+    void zoom_rst();
 };
