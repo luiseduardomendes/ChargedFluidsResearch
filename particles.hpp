@@ -16,6 +16,8 @@ public:
     Vector pos;
     Vector spd;
     Vector acc;
+    double charge;
+    double mass;
     Particle();
     Particle(double x, double y, double z, string type);
 };

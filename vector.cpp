@@ -1,4 +1,5 @@
 #include "vector.hpp"
+#include <cstring>
 
 Vector::Vector(){
     x = 0;
@@ -103,6 +104,18 @@ Vector Vector::operator/(double i){
     temp.y = this->y / i;
     temp.z = this->z / i;
     return temp;
+}
+bool Vector::operator==(Vector v){
+    if (v.x == x && v.y == y && v.z == z)
+        return true;
+    else
+        return false;
+}
+bool Vector::operator!=(Vector v){
+    if (v.x == x && v.y == y && v.z == z)
+        return false;
+    else
+        return true;
 }
 double Vector::dot(Vector v){
     return (x*v.x + y*v.y + z*v.z);

@@ -32,6 +32,9 @@ class Allegro_interface{
         void verify_event(ALLEGRO_EVENT event);
         void update_particle_position();
         void initialize_box(pdd,pdd,pdd);
+        void calculate_forces();
+        void resultant_vector(Particle *p);
+        Vector eletric_field_in(Vector pos);
     public:
         
         Allegro_interface(int disp_w, int disp_h, int fps, double init_z, string file_name);

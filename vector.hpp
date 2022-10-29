@@ -1,5 +1,8 @@
 #pragma once
 #include <vector>
+#include <string>
+
+using namespace std;
 
 class Vector{
 public:
@@ -16,6 +19,8 @@ public:
     Vector operator*(double);
     Vector operator/(double);
     Vector operator/(Vector);
+    bool operator==(Vector);
+    bool operator!=(Vector);
     double operator[](int);
     double operator[](char);
     double dot(Vector);

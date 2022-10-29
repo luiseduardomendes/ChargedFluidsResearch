@@ -1,5 +1,6 @@
 #include "allegro_interface.hpp"
 #include <cmath>
+#include "common.hpp"
 
 Allegro_interface::Allegro_interface(int disp_w, int disp_h, int fps, double init_z, string file_name){
     initialize_box({-20,20}, {-20,20}, {-20,20});
@@ -98,22 +99,23 @@ void Allegro_interface::initialize_box(pdd x, pdd y, pdd z){
 
 void Allegro_interface::update_particle_position(){
     double t = app_controller.get_timer();
+    calculate_forces();
     for (auto i : this->particles){
         i->spd = i->spd + (i->acc * (1.0/fps));
-
         i->pos = i->pos + (i->spd * (1.0/fps));
+
         if (i->pos.x > 20)
-            i->pos.x -= 40;
+            i->pos.x = box.p[0][0][0].x;
         if (i->pos.x < -20)
-            i->pos.x += 40;
+            i->pos.x = box.p[1][0][0].x;
         if (i->pos.y > 20)
-            i->pos.y -= 40;
+            i->pos.y = box.p[0][0][0].y;
         if (i->pos.y < -20)
-            i->pos.y += 40;
+            i->pos.y = box.p[0][1][0].y;
         if (i->pos.z > 20)
-            i->pos.z -= 40;
+            i->pos.z = box.p[0][0][0].z;
         if (i->pos.z < -20)
-            i->pos.z += 40;
+            i->pos.z = box.p[0][0][1].z;
 
         /*i->pos.x = i->pos.x + (10*sin(50*t) * (1.0/fps));*/
         
@@ -122,10 +124,29 @@ void Allegro_interface::update_particle_position(){
         i->pos.y += (sin(10*t) * (1.0/fps));*/
 
         /* MOVIMENTO ALEATORIO*/
-        i->acc = (Vector((rand()%11 - 5), (rand()%11 - 5), 0));
-        
+        // i->acc = (Vector((rand()%11 - 5), (rand()%11 - 5), 0));
     }
+}
 
+Vector Allegro_interface::eletric_field_in(Vector pos){
+    Vector E(0,0,0);
+    for (auto p : this->particles){
+        if (_calc_distance(p->pos, pos) > p->radius){
+            E = E + _calc_eletric_field(pos, *p);
+        }
+    }
+    return E;
+}
 
+void Allegro_interface::resultant_vector(Particle *p){
+    Vector acc(0,0,0);
+    acc = acc + (eletric_field_in(p->pos) * p->charge) / p->mass;
+    //cout << "acc: " << acc.x << " " << acc.y << " " << acc.z << " " << endl;
 
+    p->acc = acc;
+}
+
+void Allegro_interface::calculate_forces(){
+    for (auto p : this->particles)
+        this->resultant_vector(p);
 }

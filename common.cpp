@@ -1,5 +1,6 @@
 #include "common.hpp"
 #include <fstream>
+#include <cmath>
 
 void read_csv(string file_name, vector<Particle *> &particles){
     
@@ -37,3 +38,18 @@ void split(string str, vector<float>& v, string& particle_type, char sep){
     }
     v.push_back(atof(str.substr(begin).c_str()));
 }
+
+Vector _calc_eletric_field(Vector point, Particle p){
+    double e0 = 2.077193348 * pow(10,-2); // (e^2 * s^2) / (u * A^3)
+    double k = 1/(4*M_PI*e0);
+    double d = _calc_distance(point, p.pos);
+    Vector E;
+    if (d > p.radius)
+        E = (point-p.pos) * (k * p.charge / pow(d, 3/2));
+    return E;
+}
+
+double _calc_distance(Vector p1, Vector p2){
+    return sqrt(pow(p1.x-p2.x, 2) + pow(p1.y-p2.y, 2) + pow(p1.z-p2.z, 2));
+}
+
