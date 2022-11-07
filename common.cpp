@@ -49,7 +49,43 @@ Vector _calc_eletric_field(Vector point, Particle p){
     return E;
 }
 
+Vector _calc_lennard_jones(Particle p1, Particle p2){
+    Vector d = p1.pos - p2.pos;
+    double cutwca = pow(2, 1/6);
+    double dist;
+    double c5;
+    unsigned int Lx = 2*p1.radius;
+    Vector lennard;
+    Vector d2(round(d.x/Lx), round(d.y/Lx), round(d.z/Lx));
+    d = d - d2;
+
+    dist = sqrt(d.dot(d));
+
+    if(dist < cutwca){
+        c5 = 5.0 * (-6.0 / pow(dist, 7) + 12.0 / pow(dist, 13));
+        if(dist <= 0.8)
+            c5 = 5.0 * (-6.0 / pow(0.8, 7) + 12.0 / pow(0.8, 13));
+    lennard = d * c5 / dist;
+    }
+    return lennard;
+}    
+
+
 double _calc_distance(Vector p1, Vector p2){
     return sqrt(pow(p1.x-p2.x, 2) + pow(p1.y-p2.y, 2) + pow(p1.z-p2.z, 2));
 }
 
+void _sort(vector<Particle *> &arr){
+    int n = arr.size();
+    for (int gap = n/2; gap > 0; gap /= 2){
+        for (int i = gap; i < n; i += 1){            
+            Particle* temp = arr[i];
+            
+            int j;           
+            for (j = i; j >= gap && *(arr[j - gap]) > *temp; j -= gap)
+                arr[j] = arr[j - gap];
+             
+            arr[j] = temp;
+        }
+    }
+}

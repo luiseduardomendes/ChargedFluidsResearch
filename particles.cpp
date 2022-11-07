@@ -8,7 +8,6 @@ Particle::Particle(){
 
 Particle::Particle(double x, double y, double z, string type){
     this->pos = Vector(x, y, z);
-    this->spd = Vector((rand()%3 - 1), (rand()%3 - 1), (rand()%3 - 1));
     this->spd = Vector(0,0,0);
     this->acc = Vector(0,0,0);
     this->type = type;
@@ -26,6 +25,25 @@ Particle::Particle(double x, double y, double z, string type){
         this->color = al_map_rgb(0x0e,0x52,0x66);
     }
     else{
+        this->charge = 1;
+        this->mass = 1;
+        this->radius = 1;
         this->color = al_map_rgb(255,255,255);
     }
+}
+
+bool Particle::operator<(Particle p){
+    return this->pos < p.pos;
+}
+
+bool Particle::operator>(Particle p){
+    return this->pos > p.pos;
+}
+
+bool Particle::operator<=(Particle p){
+    return this->pos <= p.pos;
+}
+
+bool Particle::operator>=(Particle p){
+    return this->pos >= p.pos;
 }

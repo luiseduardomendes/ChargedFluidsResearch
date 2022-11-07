@@ -23,6 +23,10 @@ public:
     bool operator!=(Vector);
     double operator[](int);
     double operator[](char);
+    bool operator<(Vector);
+    bool operator>(Vector);
+    bool operator<=(Vector);
+    bool operator>=(Vector);
     double dot(Vector);
     Vector ort(Vector);
 

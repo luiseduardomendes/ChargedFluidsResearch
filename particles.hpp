@@ -20,4 +20,9 @@ public:
     double mass;
     Particle();
     Particle(double x, double y, double z, string type);
+
+    bool operator<(Particle);
+    bool operator>(Particle);
+    bool operator<=(Particle);
+    bool operator>=(Particle);
 };

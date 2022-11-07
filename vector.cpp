@@ -49,6 +49,18 @@ double Vector::operator[](char c){
         break;
     }
 }
+bool Vector::operator<(Vector v){
+    return z < v.z;
+}
+bool Vector::operator>(Vector v){
+    return z > v.z;
+}
+bool Vector::operator<=(Vector v){
+    return z <= v.z;
+}
+bool Vector::operator>=(Vector v){
+    return z >= v.z;
+}
 Vector Vector::operator+(Vector v){
     Vector temp;
     temp.x = this->x + v.x;

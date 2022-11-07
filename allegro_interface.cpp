@@ -19,6 +19,7 @@ Allegro_interface::Allegro_interface(int disp_w, int disp_h, int fps, double ini
     
     this->fps = fps;
     this->exec_spd = 5;
+    this->on_3d = false;
 }
 
 void Allegro_interface::run_app(){
@@ -74,6 +75,9 @@ void Allegro_interface::keyboard_event(ALLEGRO_EVENT event){
     case ALLEGRO_KEY_0:
         this->display->zoom_rst();
         break;
+    case ALLEGRO_KEY_Q:
+        this->on_3d = !this->on_3d;
+        break;
     }
 
 }
@@ -83,48 +87,49 @@ void Allegro_interface::timer_event(ALLEGRO_EVENT event){
     if (source == this->display->timer and !this->display->is_paused()){
         this->update_particle_position();
     }
-    this->display->show();
+    if (on_3d)
+        this->display->show_3d();
+    else
+        this->display->show();
 }
 
 void Allegro_interface::initialize_box(pdd x, pdd y, pdd z){
-    this->box.p[0][0][0] = Vector(x.inf,y.inf,z.inf);
-    this->box.p[0][0][1] = Vector(x.inf,y.inf,z.sup);
-    this->box.p[0][1][0] = Vector(x.inf,y.sup,z.inf);
-    this->box.p[0][1][1] = Vector(x.inf,y.sup,z.sup);
-    this->box.p[1][0][0] = Vector(x.sup,y.inf,z.inf);
-    this->box.p[1][0][1] = Vector(x.sup,y.inf,z.sup);
-    this->box.p[1][1][0] = Vector(x.sup,y.sup,z.inf);
-    this->box.p[1][1][1] = Vector(x.sup,y.sup,z.sup);
+    this->box.p[0][0][0] = Vector(x.first,y.first,z.first);
+    this->box.p[0][0][1] = Vector(x.first,y.first,z.second);
+    this->box.p[0][1][0] = Vector(x.first,y.second,z.first);
+    this->box.p[0][1][1] = Vector(x.first,y.second,z.second);
+    this->box.p[1][0][0] = Vector(x.second,y.first,z.first);
+    this->box.p[1][0][1] = Vector(x.second,y.first,z.second);
+    this->box.p[1][1][0] = Vector(x.second,y.second,z.first);
+    this->box.p[1][1][1] = Vector(x.second,y.second,z.second);
+
+    this->box.inf.x = x.first;
+    this->box.inf.y = y.first;
+    this->box.inf.z = z.first;
+    
+    this->box.sup.x = x.second;
+    this->box.sup.y = y.second;
+    this->box.sup.z = z.second;
 }
 
 void Allegro_interface::update_particle_position(){
-    double t = app_controller.get_timer();
     calculate_forces();
     for (auto i : this->particles){
         i->spd = i->spd + (i->acc * (1.0/fps));
         i->pos = i->pos + (i->spd * (1.0/fps));
 
         if (i->pos.x > 20)
-            i->pos.x = box.p[0][0][0].x;
+            i->pos.x = box.inf.x;
         if (i->pos.x < -20)
-            i->pos.x = box.p[1][0][0].x;
+            i->pos.x = box.sup.x;
         if (i->pos.y > 20)
-            i->pos.y = box.p[0][0][0].y;
+            i->pos.y = box.inf.y;
         if (i->pos.y < -20)
-            i->pos.y = box.p[0][1][0].y;
+            i->pos.y = box.sup.y;
         if (i->pos.z > 20)
-            i->pos.z = box.p[0][0][0].z;
+            i->pos.z = box.inf.z;
         if (i->pos.z < -20)
-            i->pos.z = box.p[0][0][1].z;
-
-        /*i->pos.x = i->pos.x + (10*sin(50*t) * (1.0/fps));*/
-        
-        /* MOVIMENTO CIRCULAR
-        i->pos.x += (-cos(10*t) * (1.0/fps));
-        i->pos.y += (sin(10*t) * (1.0/fps));*/
-
-        /* MOVIMENTO ALEATORIO*/
-        // i->acc = (Vector((rand()%11 - 5), (rand()%11 - 5), 0));
+            i->pos.z = box.sup.z;
     }
 }
 
@@ -138,13 +143,25 @@ Vector Allegro_interface::eletric_field_in(Vector pos){
     return E;
 }
 
+Vector Allegro_interface::lennard_jones(Particle p){
+    Vector L(0,0,0);
+    for (auto q : this->particles){
+        if (_calc_distance(p.pos, q->pos) > p.radius+q->radius){
+            L = L + _calc_lennard_jones(p, *q);
+        }
+    }
+    return L;
+
+}
+
 void Allegro_interface::resultant_vector(Particle *p){
     Vector acc(0,0,0);
     acc = acc + (eletric_field_in(p->pos) * p->charge) / p->mass;
-    //cout << "acc: " << acc.x << " " << acc.y << " " << acc.z << " " << endl;
+    //acc = acc + (lennard_jones(*p));
 
     p->acc = acc;
 }
+
 
 void Allegro_interface::calculate_forces(){
     for (auto p : this->particles)

@@ -24,6 +24,10 @@ public:
 
     Display(int, int, double, double, vector<Particle*>, Box);
 
+    void show_3d();
+    void draw_particles_3d();
+    void draw_box_3d();
+
     void show();
     void draw_particles();
     void draw_HUD();

@@ -3,4 +3,5 @@
 
 struct Box{
     Vector p[2][2][2];
+    Vector inf, sup;
 };

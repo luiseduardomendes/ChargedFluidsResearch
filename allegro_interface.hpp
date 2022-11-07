@@ -9,8 +9,6 @@
 #include "display.hpp"
 #include "app_controller.hpp"
 #include "box.hpp"
-#define inf first 
-#define sup second
 
 typedef pair<double, double> pdd;
 
@@ -26,6 +24,7 @@ class Allegro_interface{
         double fps;
         double exec_spd;
         Box box;
+        bool on_3d;
 
         void timer_event(ALLEGRO_EVENT event);
         void keyboard_event(ALLEGRO_EVENT event);
@@ -35,6 +34,7 @@ class Allegro_interface{
         void calculate_forces();
         void resultant_vector(Particle *p);
         Vector eletric_field_in(Vector pos);
+        Vector lennard_jones(Particle p);
     public:
         
         Allegro_interface(int disp_w, int disp_h, int fps, double init_z, string file_name);

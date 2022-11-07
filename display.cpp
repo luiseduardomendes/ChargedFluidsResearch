@@ -1,4 +1,6 @@
 #include "display.hpp"
+#include "common.hpp"
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 
@@ -24,7 +26,7 @@ Display::Display(int w, int h, double fps, double init_z, vector<Particle*> part
     al_start_timer(this->timer);
     this->paused = false;
 
-    this->zoom = 1;
+    this->zoom = 2.5;
     this->box = box;
 
 }
@@ -43,16 +45,98 @@ void Display::show(){
     al_flip_display();
 }
 
+void Display::show_3d(){
+    al_clear_to_color(al_map_rgb(0x00, 0x11, 0x20));
+    this->draw_box_3d();
+    this->draw_particles_3d();
+    al_flip_display();
+}
+
+void Display::draw_particles_3d(){
+    auto temp = this->particles;
+    _sort(temp);
+    
+    for (auto p : temp){
+        double cte = (p->pos.z/40+1);
+
+        al_draw_filled_circle(
+            p->pos.x*zoom*CTE_CONV*cte + w/2, 
+            p->pos.y*zoom*CTE_CONV*cte + h/2,
+            p->radius*zoom*CTE_CONV*cte, 
+            p->color
+        );
+
+        al_draw_circle(
+            p->pos.x*zoom*CTE_CONV*cte + w/2, 
+            p->pos.y*zoom*CTE_CONV*cte + h/2,
+            p->radius*zoom*CTE_CONV*cte, 
+            al_map_rgb(0,0,0), 0.2*p->radius*zoom*CTE_CONV*cte
+        );
+    }    
+}
+
+void Display::draw_box_3d(){
+    al_draw_rectangle(
+        box.inf.x * zoom*CTE_CONV*1.5 + w/2, 
+        box.inf.y * zoom*CTE_CONV*1.5 + h/2, 
+        box.sup.x * zoom*CTE_CONV*1.5 + w/2, 
+        box.sup.y * zoom*CTE_CONV*1.5 + h/2, 
+        al_map_rgb(0xc0,0xc0,0xc0),
+        2
+    );
+    al_draw_rectangle(
+        box.inf.x * zoom*CTE_CONV*0.5 + w/2, 
+        box.inf.y * zoom*CTE_CONV*0.5 + h/2, 
+        box.sup.x * zoom*CTE_CONV*0.5 + w/2, 
+        box.sup.y * zoom*CTE_CONV*0.5 + h/2, 
+        al_map_rgb(0xc0,0xc0,0xc0),
+        2
+    );
+    al_draw_line(
+        box.inf.x * zoom*CTE_CONV*0.5 + w/2, 
+        box.inf.y * zoom*CTE_CONV*0.5 + h/2, 
+        box.inf.x * zoom*CTE_CONV*1.5 + w/2, 
+        box.inf.y * zoom*CTE_CONV*1.5 + h/2,
+        al_map_rgb(0xc0,0xc0,0xc0),
+        2
+    );
+    al_draw_line(
+        box.sup.x * zoom*CTE_CONV*0.5 + w/2, 
+        box.sup.y * zoom*CTE_CONV*0.5 + h/2, 
+        box.sup.x * zoom*CTE_CONV*1.5 + w/2, 
+        box.sup.y * zoom*CTE_CONV*1.5 + h/2,
+        al_map_rgb(0xc0,0xc0,0xc0),
+        2
+    );
+    al_draw_line(
+        box.inf.x * zoom*CTE_CONV*0.5 + w/2, 
+        box.sup.y * zoom*CTE_CONV*0.5 + h/2, 
+        box.inf.x * zoom*CTE_CONV*1.5 + w/2, 
+        box.sup.y * zoom*CTE_CONV*1.5 + h/2,
+        al_map_rgb(0xc0,0xc0,0xc0),
+        2
+    );
+    al_draw_line(
+        box.sup.x * zoom*CTE_CONV*0.5 + w/2, 
+        box.inf.y * zoom*CTE_CONV*0.5 + h/2, 
+        box.sup.x * zoom*CTE_CONV*1.5 + w/2, 
+        box.inf.y * zoom*CTE_CONV*1.5 + h/2,
+        al_map_rgb(0xc0,0xc0,0xc0),
+        2
+    );
+
+}
+
 void Display::draw_HUD(){
     // al_draw_textf(this->font, al_map_rgb(0xff,0xff,0xff), 2*w/3, h - 48, 0, "grid line dimension = %dÅ ", 10);
 }
 
 void Display::draw_box(){
     al_draw_rectangle(
-        box.p[0][0][0].x * zoom*CTE_CONV + w/2, 
-        box.p[0][0][0].y * zoom*CTE_CONV + h/2, 
-        box.p[1][1][0].x * zoom*CTE_CONV + w/2, 
-        box.p[1][1][0].y * zoom*CTE_CONV + h/2, 
+        box.inf.x * zoom*CTE_CONV + w/2, 
+        box.inf.y * zoom*CTE_CONV + h/2, 
+        box.sup.x * zoom*CTE_CONV + w/2, 
+        box.sup.y * zoom*CTE_CONV + h/2, 
         al_map_rgb(0xc0,0xc0,0xc0),
         2
     );
