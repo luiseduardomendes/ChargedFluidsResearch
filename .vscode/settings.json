@@ -45,6 +45,10 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "cinttypes": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "common.h": "c",
+        "particles.h": "c",
+        "string.h": "c",
+        "simulation.h": "c"
     }
 }
