@@ -30,7 +30,7 @@ class Allegro_interface{
         void keyboard_event(ALLEGRO_EVENT event);
         void verify_event(ALLEGRO_EVENT event);
         void update_particle_position();
-        void initialize_box(pdd,pdd,pdd);
+        
         void calculate_forces();
         void resultant_vector(Particle *p);
         Vector eletric_field_in(Vector pos);

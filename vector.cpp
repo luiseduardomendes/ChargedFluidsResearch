@@ -1,5 +1,6 @@
 #include "vector.hpp"
 #include <cstring>
+#include <cmath>
 
 Vector::Vector(){
     x = 0;
@@ -136,6 +137,23 @@ Vector Vector::ort(Vector v){
     Vector temp;
     temp.x = y*v.z - z*v.y;
     temp.y = z*v.x - x*v.z;
-    temp.y = x*v.y - y*v.x;
+    temp.z = x*v.y - y*v.x;
     return temp;
 }
+
+double Vector::mag(){
+    return (sqrt(x*x + y*y + z*z));
+}
+
+Vector Vector::unit(){
+    double mag = this->mag();
+    Vector temp(x/mag, y/mag, z/mag);
+    return temp;
+}
+
+Vector Vector::proj(Vector v){
+    Vector temp(x, y, z);
+    return temp * v / (v.mag() * temp.mag());
+    
+}
+

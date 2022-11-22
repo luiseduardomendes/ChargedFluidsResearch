@@ -3,11 +3,12 @@
 #include "common.hpp"
 
 Allegro_interface::Allegro_interface(int disp_w, int disp_h, int fps, double init_z, string file_name){
-    initialize_box({-20,20}, {-20,20}, {-20,20});
+    this->box = Box(20);
     if (!al_init())
         return;
     read_csv(file_name, this->particles);
-    this->display = new Display(disp_w, disp_h, fps, init_z, this->particles, box);
+    
+    this->display = new Display(disp_w, disp_h, fps, init_z, this->particles, &box);
     if (!display->is_on())
         return;
     
@@ -36,6 +37,8 @@ void Allegro_interface::run_app(){
         this->verify_event(event);
         
     } while (this->app_controller.is_running());
+
+    al_destroy_display(this->display->display);
 }
 
 void Allegro_interface::verify_event(ALLEGRO_EVENT event){
@@ -75,6 +78,12 @@ void Allegro_interface::keyboard_event(ALLEGRO_EVENT event){
     case ALLEGRO_KEY_0:
         this->display->zoom_rst();
         break;
+    case ALLEGRO_KEY_M:
+        this->display->fov_out();
+        break;
+    case ALLEGRO_KEY_N:
+        this->display->fov_in();
+        break;
     case ALLEGRO_KEY_Q:
         this->on_3d = !this->on_3d;
         break;
@@ -93,24 +102,7 @@ void Allegro_interface::timer_event(ALLEGRO_EVENT event){
         this->display->show();
 }
 
-void Allegro_interface::initialize_box(pdd x, pdd y, pdd z){
-    this->box.p[0][0][0] = Vector(x.first,y.first,z.first);
-    this->box.p[0][0][1] = Vector(x.first,y.first,z.second);
-    this->box.p[0][1][0] = Vector(x.first,y.second,z.first);
-    this->box.p[0][1][1] = Vector(x.first,y.second,z.second);
-    this->box.p[1][0][0] = Vector(x.second,y.first,z.first);
-    this->box.p[1][0][1] = Vector(x.second,y.first,z.second);
-    this->box.p[1][1][0] = Vector(x.second,y.second,z.first);
-    this->box.p[1][1][1] = Vector(x.second,y.second,z.second);
 
-    this->box.inf.x = x.first;
-    this->box.inf.y = y.first;
-    this->box.inf.z = z.first;
-    
-    this->box.sup.x = x.second;
-    this->box.sup.y = y.second;
-    this->box.sup.z = z.second;
-}
 
 void Allegro_interface::update_particle_position(){
     calculate_forces();
@@ -118,17 +110,17 @@ void Allegro_interface::update_particle_position(){
         i->spd = i->spd + (i->acc * (1.0/fps));
         i->pos = i->pos + (i->spd * (1.0/fps));
 
-        if (i->pos.x > 20)
+        if (i->pos.x > box.sup.x)
             i->pos.x = box.inf.x;
-        if (i->pos.x < -20)
+        if (i->pos.x < box.inf.x)
             i->pos.x = box.sup.x;
-        if (i->pos.y > 20)
+        if (i->pos.y > box.sup.y)
             i->pos.y = box.inf.y;
-        if (i->pos.y < -20)
+        if (i->pos.y < box.inf.y)
             i->pos.y = box.sup.y;
-        if (i->pos.z > 20)
+        if (i->pos.z > box.sup.z)
             i->pos.z = box.inf.z;
-        if (i->pos.z < -20)
+        if (i->pos.z < box.inf.z)
             i->pos.z = box.sup.z;
     }
 }
@@ -140,6 +132,53 @@ Vector Allegro_interface::eletric_field_in(Vector pos){
             E = E + _calc_eletric_field(pos, *p);
         }
     }
+    double boxh, boxw, boxl;
+    boxh = box.sup.y - box.inf.y;
+    boxw = box.sup.x - box.inf.x;
+    boxl = box.sup.z - box.inf.z;
+    for (auto p : this->particles){
+        Particle p_ = *p;
+        p_.pos = p_.pos + Vector(0,boxh,0);
+        if (_calc_distance(p_.pos, pos) > p->radius){
+            E = E + _calc_eletric_field(pos, p_);
+        }
+    }
+    for (auto p : this->particles){
+        Particle p_ = *p;
+        p_.pos = p_.pos + Vector(0,-boxh,0);
+        if (_calc_distance(p_.pos, pos) > p->radius){
+            E = E + _calc_eletric_field(pos, p_);
+        }
+    }
+    for (auto p : this->particles){
+        Particle p_ = *p;
+        p_.pos = p_.pos + Vector(boxw,0,0);
+        if (_calc_distance(p_.pos, pos) > p->radius){
+            E = E + _calc_eletric_field(pos, p_);
+        }
+    }
+    for (auto p : this->particles){
+        Particle p_ = *p;
+        p_.pos = p_.pos + Vector(-boxw,0,0);
+        if (_calc_distance(p_.pos, pos) > p->radius){
+            E = E + _calc_eletric_field(pos, p_);
+        }
+    }
+    for (auto p : this->particles){
+        Particle p_ = *p;
+        p_.pos = p_.pos + Vector(0,0,boxl);
+        if (_calc_distance(p_.pos, pos) > p->radius){
+            E = E + _calc_eletric_field(pos, p_);
+        }
+    }
+    for (auto p : this->particles){
+        Particle p_ = *p;
+        p_.pos = p_.pos + Vector(0,0,-boxl);
+        if (_calc_distance(p_.pos, pos) > p->radius){
+            E = E + _calc_eletric_field(pos, p_);
+        }
+    }    
+    
     return E;
 }
 

@@ -29,6 +29,9 @@ public:
     bool operator>=(Vector);
     double dot(Vector);
     Vector ort(Vector);
+    Vector proj(Vector);
+    double mag();
+    Vector unit();
 
 
 };
