@@ -17,6 +17,7 @@ Allegro_interface::Allegro_interface(int disp_w, int disp_h, int fps, double ini
     al_init_primitives_addon();
     al_init_font_addon();
     
+    this->physic_events = PhysicEvents(&(this->particles), box, 1.0/fps);
     
     this->fps = fps;
     this->exec_spd = 5;
@@ -94,115 +95,10 @@ void Allegro_interface::keyboard_event(ALLEGRO_EVENT event){
 void Allegro_interface::timer_event(ALLEGRO_EVENT event){
     ALLEGRO_TIMER* source = event.timer.source;
     if (source == this->display->timer and !this->display->is_paused()){
-        this->update_particle_position();
+        this->physic_events.calculate_new_system_status();
     }
     if (on_3d)
         this->display->show_3d();
     else
         this->display->show();
-}
-
-
-
-void Allegro_interface::update_particle_position(){
-    calculate_forces();
-    for (auto i : this->particles){
-        i->spd = i->spd + (i->acc * (1.0/fps));
-        i->pos = i->pos + (i->spd * (1.0/fps));
-
-        if (i->pos.x > box.sup.x)
-            i->pos.x = box.inf.x;
-        if (i->pos.x < box.inf.x)
-            i->pos.x = box.sup.x;
-        if (i->pos.y > box.sup.y)
-            i->pos.y = box.inf.y;
-        if (i->pos.y < box.inf.y)
-            i->pos.y = box.sup.y;
-        if (i->pos.z > box.sup.z)
-            i->pos.z = box.inf.z;
-        if (i->pos.z < box.inf.z)
-            i->pos.z = box.sup.z;
-    }
-}
-
-Vector Allegro_interface::eletric_field_in(Vector pos){
-    Vector E(0,0,0);
-    for (auto p : this->particles){
-        if (_calc_distance(p->pos, pos) > p->radius){
-            E = E + _calc_eletric_field(pos, *p);
-        }
-    }
-    double boxh, boxw, boxl;
-    boxh = box.sup.y - box.inf.y;
-    boxw = box.sup.x - box.inf.x;
-    boxl = box.sup.z - box.inf.z;
-    for (auto p : this->particles){
-        Particle p_ = *p;
-        p_.pos = p_.pos + Vector(0,boxh,0);
-        if (_calc_distance(p_.pos, pos) > p->radius){
-            E = E + _calc_eletric_field(pos, p_);
-        }
-    }
-    for (auto p : this->particles){
-        Particle p_ = *p;
-        p_.pos = p_.pos + Vector(0,-boxh,0);
-        if (_calc_distance(p_.pos, pos) > p->radius){
-            E = E + _calc_eletric_field(pos, p_);
-        }
-    }
-    for (auto p : this->particles){
-        Particle p_ = *p;
-        p_.pos = p_.pos + Vector(boxw,0,0);
-        if (_calc_distance(p_.pos, pos) > p->radius){
-            E = E + _calc_eletric_field(pos, p_);
-        }
-    }
-    for (auto p : this->particles){
-        Particle p_ = *p;
-        p_.pos = p_.pos + Vector(-boxw,0,0);
-        if (_calc_distance(p_.pos, pos) > p->radius){
-            E = E + _calc_eletric_field(pos, p_);
-        }
-    }
-    for (auto p : this->particles){
-        Particle p_ = *p;
-        p_.pos = p_.pos + Vector(0,0,boxl);
-        if (_calc_distance(p_.pos, pos) > p->radius){
-            E = E + _calc_eletric_field(pos, p_);
-        }
-    }
-    for (auto p : this->particles){
-        Particle p_ = *p;
-        p_.pos = p_.pos + Vector(0,0,-boxl);
-        if (_calc_distance(p_.pos, pos) > p->radius){
-            E = E + _calc_eletric_field(pos, p_);
-        }
-    }    
-    
-    return E;
-}
-
-Vector Allegro_interface::lennard_jones(Particle p){
-    Vector L(0,0,0);
-    for (auto q : this->particles){
-        if (_calc_distance(p.pos, q->pos) > p.radius+q->radius){
-            L = L + _calc_lennard_jones(p, *q);
-        }
-    }
-    return L;
-
-}
-
-void Allegro_interface::resultant_vector(Particle *p){
-    Vector acc(0,0,0);
-    acc = acc + (eletric_field_in(p->pos) * p->charge) / p->mass;
-    //acc = acc + (lennard_jones(*p));
-
-    p->acc = acc;
-}
-
-
-void Allegro_interface::calculate_forces(){
-    for (auto p : this->particles)
-        this->resultant_vector(p);
 }

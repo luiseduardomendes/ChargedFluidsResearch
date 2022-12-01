@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <string>
+#include "box.hpp"
+#include "common.hpp"
 
 using namespace std;
 
@@ -9,6 +11,7 @@ public:
     double x, y, z;
     Vector();
     Vector(double,double,double);
+    Vector(Box);
     template <typename T>
     Vector(T t);
     Vector operator+(Vector);

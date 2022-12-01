@@ -7,6 +7,11 @@ Vector::Vector(){
     y = 0;
     z = 0;
 }
+Vector::Vector(Box box){
+    this->x = unirand(box.inf.x, box.sup.x);
+    this->y = unirand(box.inf.y, box.sup.y);
+    this->z = unirand(box.inf.z, box.sup.z);
+}
 Vector::Vector(double x, double y, double z){
     this->x = x;
     this->y = y;

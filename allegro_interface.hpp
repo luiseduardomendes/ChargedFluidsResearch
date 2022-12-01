@@ -9,6 +9,7 @@
 #include "display.hpp"
 #include "app_controller.hpp"
 #include "box.hpp"
+#include "physic_events.hpp"
 
 typedef pair<double, double> pdd;
 
@@ -18,8 +19,9 @@ class Allegro_interface{
     private:
         Display *display;
         App_controller app_controller;
-
-        vector<Particle*> particles;
+        PhysicEvents physic_events;
+        
+        std::vector<Particle*> particles;
 
         double fps;
         double exec_spd;
@@ -29,12 +31,7 @@ class Allegro_interface{
         void timer_event(ALLEGRO_EVENT event);
         void keyboard_event(ALLEGRO_EVENT event);
         void verify_event(ALLEGRO_EVENT event);
-        void update_particle_position();
         
-        void calculate_forces();
-        void resultant_vector(Particle *p);
-        Vector eletric_field_in(Vector pos);
-        Vector lennard_jones(Particle p);
     public:
         
         Allegro_interface(int disp_w, int disp_h, int fps, double init_z, string file_name);
