@@ -45,8 +45,8 @@ void PhysicEvents::check_particle_outside_box(Particle *i){
         i->pos.z = box.sup.z;
 }
 
-Vector PhysicEvents::eletric_field_in_position(Vector pos){
-    Vector E(0,0,0);
+Vec PhysicEvents::eletric_field_in_position(Vec pos){
+    Vec E(0,0,0);
 
     for (auto p : *(this->particles)){
         if (_calc_distance(p->pos, pos) > p->radius){
@@ -57,12 +57,12 @@ Vector PhysicEvents::eletric_field_in_position(Vector pos){
     return E;
 }
 
-Vector PhysicEvents::eletric_field(Particle p){
+Vec PhysicEvents::eletric_field(Particle p){
     return (eletric_field_in_position(p.pos) * p.charge) / p.mass;
 }
 
-Vector PhysicEvents::lennard_jones(Particle p){
-    Vector L(0,0,0);
+Vec PhysicEvents::lennard_jones(Particle p){
+    Vec L(0,0,0);
     for (auto q : *(this->particles)){
         if (_calc_distance(p.pos, q->pos) > p.radius+q->radius){
             L = L + _calc_lennard_jones(p, *q);
@@ -73,7 +73,7 @@ Vector PhysicEvents::lennard_jones(Particle p){
 }
 
 void PhysicEvents::resultant_vector(Particle *p){
-    Vector acc(0,0,0);
+    Vec acc(0,0,0);
     //acc = acc + eletric_field(*p);
     acc = acc + lennard_jones(*p);
 

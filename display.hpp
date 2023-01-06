@@ -55,5 +55,5 @@ public:
     void fov_out();
     void fov_in();
 
-    void draw_vector(Vector a, Vector b, double size, pdd range);
+    void draw_vector(Vec a, Vec b, double size, pdd range);
 };

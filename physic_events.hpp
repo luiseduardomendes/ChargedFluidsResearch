@@ -19,9 +19,9 @@ class PhysicEvents{
 
         void calculate_forces();
         void resultant_vector(Particle *p);
-        Vector eletric_field_in_position(Vector pos);
-        Vector eletric_field(Particle p);
-        Vector lennard_jones(Particle p);
+        Vec eletric_field_in_position(Vec pos);
+        Vec eletric_field(Particle p);
+        Vec lennard_jones(Particle p);
     public:
         PhysicEvents();
         PhysicEvents(std::vector<Particle*>* particles, Box box, double deltaT);

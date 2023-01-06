@@ -39,24 +39,24 @@ void split(string str, vector<float>& v, string& particle_type, char sep){
     v.push_back(atof(str.substr(begin).c_str()));
 }
 
-Vector _calc_eletric_field(Vector point, Particle p){
+Vec _calc_eletric_field(Vec point, Particle p){
     double e0 = 2.077193348 * pow(10,-2); // (e^2 * s^2) / (u * A^3)
     double k = 1/(4*M_PI*e0);
     double d = _calc_distance(point, p.pos);
-    Vector E;
+    Vec E;
     if (d > p.radius)
         E = (point-p.pos) * (k * p.charge / pow(d, 3/2));
     return E;
 }
 
-Vector _calc_lennard_jones(Particle p1, Particle p2){
-    Vector d = p1.pos - p2.pos;
+Vec _calc_lennard_jones(Particle p1, Particle p2){
+    Vec d = p1.pos - p2.pos;
     double cutwca = pow(2, 1/6);
     double dist;
     double c5;
     unsigned int Lx = 2*p1.radius;
-    Vector lennard;
-    Vector d2(round(d.x/Lx), round(d.y/Lx), round(d.z/Lx));
+    Vec lennard;
+    Vec d2(round(d.x/Lx), round(d.y/Lx), round(d.z/Lx));
     d = d - d2;
 
     dist = sqrt(d.dot(d));
@@ -71,7 +71,7 @@ Vector _calc_lennard_jones(Particle p1, Particle p2){
 }    
 
 
-double _calc_distance(Vector p1, Vector p2){
+double _calc_distance(Vec p1, Vec p2){
     return sqrt(pow(p1.x-p2.x, 2) + pow(p1.y-p2.y, 2) + pow(p1.z-p2.z, 2));
 }
 
@@ -90,8 +90,8 @@ void _sort(vector<Particle *> &arr){
     }
 }
 
-Vector gausran_vector(){
-    return Vector(gausran(), gausran(), gausran());
+Vec gausran_vector(){
+    return Vec(gausran(), gausran(), gausran());
 }
 
 double gausran(){
@@ -114,4 +114,25 @@ double unirand(double min, double max){
 	double n = range + min;	
 	
 	return n;
+}
+
+Vec random_pos_in_box(Box box){
+    Vec v;
+    v.x = unirand(box.inf.x, box.sup.x);
+    v.y = unirand(box.inf.y, box.sup.y);
+    v.z = unirand(box.inf.z, box.sup.z);
+    return v;
+}
+
+bool check_colision(vector<Particle*> v, Particle* part){
+    for (auto p : v){
+        if (colide(*p, *part)){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool colide(Particle p1, Particle p2){
+    return (p1.pos - p2.pos).mag() < (p1.radius + p2.radius);
 }

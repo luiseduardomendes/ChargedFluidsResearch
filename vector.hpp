@@ -1,40 +1,36 @@
 #pragma once
+
 #include <vector>
 #include <string>
-#include "box.hpp"
-#include "common.hpp"
 
 using namespace std;
 
-class Vector{
+class Vec{
 public:
     double x, y, z;
-    Vector();
-    Vector(double,double,double);
-    Vector(Box);
+    Vec();
+    Vec(double,double,double);
     template <typename T>
-    Vector(T t);
-    Vector operator+(Vector);
-    Vector operator+(double);
-    Vector operator-(Vector);
-    Vector operator-(double);
-    Vector operator*(Vector);
-    Vector operator*(double);
-    Vector operator/(double);
-    Vector operator/(Vector);
-    bool operator==(Vector);
-    bool operator!=(Vector);
+    Vec(T t);
+    Vec operator+(Vec);
+    Vec operator+(double);
+    Vec operator-(Vec);
+    Vec operator-(double);
+    Vec operator*(Vec);
+    Vec operator*(double);
+    Vec operator/(double);
+    Vec operator/(Vec);
+    bool operator==(Vec);
+    bool operator!=(Vec);
     double operator[](int);
     double operator[](char);
-    bool operator<(Vector);
-    bool operator>(Vector);
-    bool operator<=(Vector);
-    bool operator>=(Vector);
-    double dot(Vector);
-    Vector ort(Vector);
-    Vector proj(Vector);
+    bool operator<(Vec);
+    bool operator>(Vec);
+    bool operator<=(Vec);
+    bool operator>=(Vec);
+    double dot(Vec);
+    Vec ort(Vec);
+    Vec proj(Vec);
     double mag();
-    Vector unit();
-
-
+    Vec unit();
 };

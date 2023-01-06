@@ -1,21 +1,21 @@
 #include "allegro_interface.hpp"
 #include <cmath>
+#include <iomanip>
 #include "common.hpp"
 
-Allegro_interface::Allegro_interface(int disp_w, int disp_h, int fps, double init_z, string file_name){
-    this->box = Box(20);
+Allegro_interface::Allegro_interface(int disp_w, int disp_h, int fps, double init_z, string file_name, double boxSize){
+    
+    this->box = Box(boxSize);
     if (!al_init())
         return;
     read_csv(file_name, this->particles);
+    
     
     this->display = new Display(disp_w, disp_h, fps, init_z, this->particles, &box);
     if (!display->is_on())
         return;
     
-    al_install_keyboard();
-    al_init_image_addon();
-    al_init_primitives_addon();
-    al_init_font_addon();
+    this->allegro_init();
     
     this->physic_events = PhysicEvents(&(this->particles), box, 1.0/fps);
     
@@ -24,12 +24,41 @@ Allegro_interface::Allegro_interface(int disp_w, int disp_h, int fps, double ini
     this->on_3d = false;
 }
 
+Allegro_interface::Allegro_interface(int disp_w, int disp_h, int fps, double init_z, map<string, int> map_part, double boxSize){
+    
+    this->box = Box(boxSize);
+    if (!al_init())
+        return;
+    
+    this->particles = generate_particles(map_part);
+    
+    this->display = new Display(disp_w, disp_h, fps, init_z, this->particles, &box);
+    if (!display->is_on())
+        return;
+    
+    this->allegro_init();
+    
+    this->physic_events = PhysicEvents(&(this->particles), box, 1.0/fps);
+    
+    this->fps = fps;
+    this->exec_spd = 5;
+    this->on_3d = false;
+}
+
+void Allegro_interface::allegro_init(){
+    al_install_keyboard();
+    al_init_image_addon();
+    al_init_primitives_addon();
+    al_init_font_addon();
+}
+
 void Allegro_interface::run_app(){
     ALLEGRO_EVENT_QUEUE *eventQueue = al_create_event_queue();
 
     al_register_event_source(eventQueue, al_get_display_event_source(this->display->display));
     al_register_event_source(eventQueue, al_get_timer_event_source(this->display->timer));
     al_register_event_source(eventQueue, al_get_keyboard_event_source());
+    
     
     do{
         ALLEGRO_EVENT event;
@@ -102,3 +131,22 @@ void Allegro_interface::timer_event(ALLEGRO_EVENT event){
     else
         this->display->show();
 }
+
+vector<Particle*> Allegro_interface::generate_particles(map<string, int> map_part){
+    map<string, int>::iterator it;
+    vector<Particle*> particles;
+
+    for (it = map_part.begin(); it != map_part.end(); it ++){
+        for (int i = 0; i < it->second; i ++){
+            Particle *p = new Particle(it->first);
+
+            while(check_colision(particles, p))
+                p->random_position(this->box);
+            
+            particles.push_back(p);
+        }
+    }
+    return particles;
+}
+
+

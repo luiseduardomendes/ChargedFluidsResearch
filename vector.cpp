@@ -2,28 +2,23 @@
 #include <cstring>
 #include <cmath>
 
-Vector::Vector(){
+Vec::Vec(){
     x = 0;
     y = 0;
     z = 0;
 }
-Vector::Vector(Box box){
-    this->x = unirand(box.inf.x, box.sup.x);
-    this->y = unirand(box.inf.y, box.sup.y);
-    this->z = unirand(box.inf.z, box.sup.z);
-}
-Vector::Vector(double x, double y, double z){
+Vec::Vec(double x, double y, double z){
     this->x = x;
     this->y = y;
     this->z = z;
 }
 template <typename T>
-Vector::Vector(T t){
+Vec::Vec(T t){
     this->x = t[0];
     this->y = t[1];
     this->z = t[2];
 }
-double Vector::operator[](int i){
+double Vec::operator[](int i){
     switch (i){
     case 0:
         return x;
@@ -39,7 +34,7 @@ double Vector::operator[](int i){
         break;
     }
 }
-double Vector::operator[](char c){
+double Vec::operator[](char c){
     switch (c){
     case 'x': case 'X':
         return x;
@@ -55,109 +50,109 @@ double Vector::operator[](char c){
         break;
     }
 }
-bool Vector::operator<(Vector v){
+bool Vec::operator<(Vec v){
     return z < v.z;
 }
-bool Vector::operator>(Vector v){
+bool Vec::operator>(Vec v){
     return z > v.z;
 }
-bool Vector::operator<=(Vector v){
+bool Vec::operator<=(Vec v){
     return z <= v.z;
 }
-bool Vector::operator>=(Vector v){
+bool Vec::operator>=(Vec v){
     return z >= v.z;
 }
-Vector Vector::operator+(Vector v){
-    Vector temp;
+Vec Vec::operator+(Vec v){
+    Vec temp;
     temp.x = this->x + v.x;
     temp.y = this->y + v.y;
     temp.z = this->z + v.z;
     return temp;
 }
-Vector Vector::operator+(double i){
-    Vector temp;
+Vec Vec::operator+(double i){
+    Vec temp;
     temp.x = this->x + i;
     temp.y = this->y + i;
     temp.z = this->z + i;
     return temp;
 }
-Vector Vector::operator-(Vector v){
-    Vector temp;
+Vec Vec::operator-(Vec v){
+    Vec temp;
     temp.x = this->x - v.x;
     temp.y = this->y - v.y;
     temp.z = this->z - v.z;
     return temp;
 }
-Vector Vector::operator-(double i){
-    Vector temp;
+Vec Vec::operator-(double i){
+    Vec temp;
     temp.x = this->x - i;
     temp.y = this->y - i;
     temp.z = this->z - i;
     return temp;
 }
-Vector Vector::operator*(Vector v){
-    Vector temp;
+Vec Vec::operator*(Vec v){
+    Vec temp;
     temp.x = this->x * v.x;
     temp.y = this->y * v.y;
     temp.z = this->z * v.z;
     return temp;
 }
-Vector Vector::operator*(double i){
-    Vector temp;
+Vec Vec::operator*(double i){
+    Vec temp;
     temp.x = this->x * i;
     temp.y = this->y * i;
     temp.z = this->z * i;
     return temp;
 }
-Vector Vector::operator/(Vector v){
-    Vector temp;
+Vec Vec::operator/(Vec v){
+    Vec temp;
     temp.x = this->x / v.x;
     temp.y = this->y / v.y;
     temp.z = this->z / v.z;
     return temp;
 }
-Vector Vector::operator/(double i){
-    Vector temp;
+Vec Vec::operator/(double i){
+    Vec temp;
     temp.x = this->x / i;
     temp.y = this->y / i;
     temp.z = this->z / i;
     return temp;
 }
-bool Vector::operator==(Vector v){
+bool Vec::operator==(Vec v){
     if (v.x == x && v.y == y && v.z == z)
         return true;
     else
         return false;
 }
-bool Vector::operator!=(Vector v){
+bool Vec::operator!=(Vec v){
     if (v.x == x && v.y == y && v.z == z)
         return false;
     else
         return true;
 }
-double Vector::dot(Vector v){
+double Vec::dot(Vec v){
     return (x*v.x + y*v.y + z*v.z);
 }
-Vector Vector::ort(Vector v){
-    Vector temp;
+Vec Vec::ort(Vec v){
+    Vec temp;
     temp.x = y*v.z - z*v.y;
     temp.y = z*v.x - x*v.z;
     temp.z = x*v.y - y*v.x;
     return temp;
 }
 
-double Vector::mag(){
+double Vec::mag(){
     return (sqrt(x*x + y*y + z*z));
 }
 
-Vector Vector::unit(){
+Vec Vec::unit(){
     double mag = this->mag();
-    Vector temp(x/mag, y/mag, z/mag);
+    Vec temp(x/mag, y/mag, z/mag);
     return temp;
 }
 
-Vector Vector::proj(Vector v){
-    Vector temp(x, y, z);
+Vec Vec::proj(Vec v){
+    Vec temp(x, y, z);
     return temp * v / (v.mag() * temp.mag());
     
 }

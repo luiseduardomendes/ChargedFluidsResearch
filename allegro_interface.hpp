@@ -26,15 +26,24 @@ class Allegro_interface{
         double fps;
         double exec_spd;
         Box box;
+
         bool on_3d;
+
+        void allegro_init();
+        vector<Particle*> generate_particles(map<string, int>);
 
         void timer_event(ALLEGRO_EVENT event);
         void keyboard_event(ALLEGRO_EVENT event);
+        void mouse_event(ALLEGRO_EVENT event);
         void verify_event(ALLEGRO_EVENT event);
         
     public:
         
-        Allegro_interface(int disp_w, int disp_h, int fps, double init_z, string file_name);
+
+        Allegro_interface(int disp_w, int disp_h, int fps, double init_z, string file_name, double boxSize);
+        Allegro_interface(int disp_w, int disp_h, int fps, double init_z, map<string, int> particles, double boxSize);
+
         void end_app();
         void run_app();
 };
+

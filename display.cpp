@@ -19,6 +19,7 @@ Display::Display(int w, int h, double fps, double init_z, vector<Particle*> part
     
     this->particles = part;
 
+    al_init_font_addon();
     al_init_ttf_addon();
     this->font = al_load_ttf_font("fonte.ttf", 36, 0);
     
@@ -260,22 +261,22 @@ void Display::draw_particles(){
                 sqrt(abs(pow(p->radius, 2) - pow((p->pos.z-current_z), 2)))*zoom*CTE_CONV, 
                 al_map_rgb(0,0,0), 0.2*p->radius*zoom*CTE_CONV
             );
-            Vector v(p->pos.x*zoom*CTE_CONV + w/2, p->pos.y*zoom*CTE_CONV + h/2, 0);
+            Vec v(p->pos.x*zoom*CTE_CONV + w/2, p->pos.y*zoom*CTE_CONV + h/2, 0);
             draw_vector(v, v+p->acc, 10, {0,5});
         }
     }
 }
 
-void Display::draw_vector(Vector a, Vector b, double size, pdd range){
+void Display::draw_vector(Vec a, Vec b, double size, pdd range){
     /*magnitude is given by grey scale*/
     double t = 3/(range.second - range.first);
-    Vector v = b - a;
+    Vec v = b - a;
     double c = 0xFF*v.mag()/(range.second - range.first);
     ALLEGRO_COLOR color = al_map_rgb(c, c, c);
     v = v.unit();
-    v = Vector(v.x, v.y, 0);
+    v = Vec(v.x, v.y, 0);
     al_draw_line(a.x-v.x*size/2, a.y-v.y*size/2, a.x+v.x*size/2, a.y+v.y*size/2, color, 3);
-    Vector o = v.ort(Vector(0,0,1)).unit()*size/2;
+    Vec o = v.ort(Vec(0,0,1)).unit()*size/2;
     double x = a.x+v.x*size/2;
     double y = a.y+v.y*size/2;
     
